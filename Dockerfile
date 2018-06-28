@@ -2,10 +2,12 @@
 
 FROM ubuntu:14.04
 
-MAINTAINER Mobile Builds Eng "mobile-builds-eng@uber.com"
+MAINTAINER Mobile Builds Eng "marek.sirovy@zonky.cz"
 
 # Sets language to UTF8 : this works in pretty much all cases
 ENV LANG en_US.UTF-8
+RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+# &  dpkg-reconfigure locales
 RUN locale-gen $LANG
 
 ENV DOCKER_ANDROID_LANG en_US
@@ -57,7 +59,7 @@ RUN apt-get install -y \
 # Install Java
 RUN apt-add-repository ppa:openjdk-r/ppa
 RUN apt-get update
-RUN apt-get -y install openjdk-8-jdk
+RUN apt-cache search openjdk; apt-get -y install openjdk-8-jdk
 
 # Clean Up Apt-get
 RUN rm -rf /var/lib/apt/lists/*
@@ -104,17 +106,17 @@ ENV GRADLE_OPTS "-XX:+UseG1GC -XX:MaxGCPauseMillis=1000"
 RUN apt-get clean
 
 # Add build user account, values are set to default below
-ENV RUN_USER mobileci
-ENV RUN_UID 5089
+#ENV RUN_USER mobileci
+#ENV RUN_UID 5089
 
-RUN id $RUN_USER || adduser --uid "$RUN_UID" \
-    --gecos 'Build User' \
-    --shell '/bin/sh' \
-    --disabled-login \
-    --disabled-password "$RUN_USER"
+#RUN id $RUN_USER || adduser --uid "$RUN_UID" \
+#    --gecos 'Build User' \
+#    --shell '/bin/sh' \
+#    --disabled-login \
+#    --disabled-password "$RUN_USER"
 
 # Fix permissions
-RUN chown -R $RUN_USER:$RUN_USER $ANDROID_HOME $ANDROID_SDK_HOME $ANDROID_NDK_HOME
+#RUN chown -R $RUN_USER:$RUN_USER $ANDROID_HOME $ANDROID_SDK_HOME $ANDROID_NDK_HOME
 RUN chmod -R a+rx $ANDROID_HOME $ANDROID_SDK_HOME $ANDROID_NDK_HOME
 
 # Creating project directories prepared for build when running
